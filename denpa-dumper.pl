@@ -78,7 +78,7 @@ sub process_args {
             $arg_out = 0;
         } elsif($arg_type) {
             die("Output type defined twice.") if($outtype);
-            die("Invalid output type.") unless($outtype =~ /^(stdout|text|html)$/);
+            die("Invalid output type.") unless($arg =~ /^(stdout|text|html)$/);
             $outtype = $arg;
             $arg_type = 0;
         } elsif($arg_length) {
@@ -87,7 +87,7 @@ sub process_args {
             $arg_type = 0;
         } elsif($arg_sort) {
             die("Sort defined twice.") if($defaultsort);
-            die("Invalid sort.") unless($outtype =~ /^(name|created|size|downloads)$/);
+            die("Invalid sort.") unless($arg =~ /^(name|created|size|downloads)$/);
             $defaultsort = $arg;
             $arg_sort = 0;
         } elsif($arg eq '-h') {
