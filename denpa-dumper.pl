@@ -125,7 +125,7 @@ sub usage {
 sub mediafire_info {
     my $folderkey = shift;
     
-    my $response = get("http://www.mediafire.com/api/folder/get_info.php?folder_key=$folderkey&response_format=json");
+    my $response = get("http://www.mediafire.com/api/1.5/folder/get_info.php?folder_key=$folderkey&response_format=json");
     die "Error getting data from Mediafire API." unless defined $response;
     
     my $decoded = decode_json($response);
@@ -133,11 +133,26 @@ sub mediafire_info {
 }
 sub mediafire_get {
     my ($action, $folderkey, $order) = @_;
-    my $response = get("http://www.mediafire.com/api/folder/get_content.php?folder_key=$folderkey&content_type=$action&response_format=json&order_by=$order");
-    die "Error getting data from Mediafire API." unless defined $response;
     
-    my $decoded = decode_json($response);
-    return @{$decoded->{'response'}{'folder_content'}{$action}};
+    my $chunk = 1;
+    my $more_chunks = 1;
+    my @full_list;
+
+    while($more_chunks) {
+      my $response = get("http://www.mediafire.com/api/1.5/folder/get_content.php?folder_key=$folderkey&content_type=$action&response_format=json&order_by=$order&chunk=$chunk");
+      die "Error getting data from Mediafire API." unless defined $response;
+
+      my $decoded = decode_json($response);
+      push(@full_list, @{$decoded->{'response'}{'folder_content'}{$action}});
+
+      if($decoded->{'response'}{'folder_content'}{'more_chunks'} eq 'yes') {
+        $chunk++;
+      } else {
+        $more_chunks = 0;
+      }
+    }
+
+    return @full_list;
 }
 
 sub gen_link {
