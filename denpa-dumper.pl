@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Encode;
-use JSON qw( decode_json );
+use JSON::PP qw( decode_json );
 use LWP::Simple;
 
 binmode STDOUT, ":utf8";
